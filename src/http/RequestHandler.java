@@ -57,10 +57,8 @@ public class RequestHandler extends Thread {
 			} else { // POST, PUT, DELETE, HEAD, CONNECT 와 같은 Method는 무시
 				consoleLog("Bad Request: " + tokens[1]);
 				/*
-				 * 응답예시 HTTP/1.1 400 Bad Request\r\n 
-				 * Content-Type:text/html; charset=utf-8\r\n
-				 * \r\n 
-				 * HTML 에러 문서
+				 * 응답예시 HTTP/1.1 400 Bad Request\r\n Content-Type:text/html; charset=utf-8\r\n
+				 * \r\n HTML 에러 문서
 				 * 
 				 */
 				response400Error(os, tokens[2]);
@@ -98,9 +96,8 @@ public class RequestHandler extends Thread {
 		File file = new File(DOCUMENT_ROOT + url);
 		if (!file.exists()) {
 			/*
-			 * 응답예시 HTTP/1.1 404 File Not Found]\r\n 
-			 * Content-Type:text/html; charset=utf-8\r\n \r\n 
-			 * HTML 에러 문서
+			 * 응답예시 HTTP/1.1 404 File Not Found]\r\n Content-Type:text/html;
+			 * charset=utf-8\r\n \r\n HTML 에러 문서
 			 * 
 			 */
 			response404Error(os, protocol);
@@ -110,38 +107,59 @@ public class RequestHandler extends Thread {
 
 		byte body[] = Files.readAllBytes(file.toPath());
 		String contentType = Files.probeContentType(file.toPath());
-		//text/html
-		
+		// text/html
+
 		// 응답
 		os.write((protocol + " 200 OK\r\n").getBytes("UTF-8"));
-		os.write((contentType + "; charset=utf-8\r\n").getBytes("UTF-8"));
+		os.write(("Content-Type:" + contentType + "; charset=utf-8\r\n").getBytes("UTF-8"));
 		os.write("\r\n".getBytes());
 		os.write(body);
+		System.out.println();
 
 	}
 
 	public void response404Error(OutputStream os, String protocol) throws IOException {
 		File file = new File(ERROR_LOC + "/404.html");
-		byte body[] = Files.readAllBytes(file.toPath());
-		String contentType = Files.probeContentType(file.toPath());
+		byte body[] = null;
+
+		if (file.exists()) {
+			body = Files.readAllBytes(file.toPath());
+		}
+
+		// String contentType = Files.probeContentType(file.toPath());
 		os.write((protocol + " 404 File Not Found\r\n").getBytes("UTF-8"));
-		os.write((contentType + "; charset=utf-8\r\n").getBytes("UTF-8"));
-		os.write("\r\n".getBytes());
-		os.write(body);
-		
+
+		if (body != null) {
+			String contentType = Files.probeContentType(file.toPath());
+			os.write(("Content-Type:" + contentType + "; charset=utf-8\r\n").getBytes("UTF-8"));
+			os.write("\r\n".getBytes());
+			os.write(body);
+
+		}
+
 	}
-	
+
 	public void response400Error(OutputStream os, String protocol) throws IOException {
 		File file = new File(ERROR_LOC + "/400.html");
-		byte body[] = Files.readAllBytes(file.toPath());
-		String contentType = Files.probeContentType(file.toPath());
+		byte body[] = null;
+
+		if (file.exists()) {
+			body = Files.readAllBytes(file.toPath());
+		}
+
+		// String contentType = Files.probeContentType(file.toPath());
 		os.write((protocol + " 400 Bad Request\r\n").getBytes("UTF-8"));
-		os.write((contentType + "; charset=utf-8\r\n").getBytes("UTF-8"));
-		os.write("\r\n".getBytes());
-		os.write(body);
-		
+
+		if (body != null) {
+			String contentType = Files.probeContentType(file.toPath());
+			os.write(("Content-Type:" + contentType + "; charset=utf-8\r\n").getBytes("UTF-8"));
+			os.write("\r\n".getBytes());
+			os.write(body);
+
+		}
+
 	}
-	
+
 	public void consoleLog(String message) {
 		System.out.println("[RequestHandler#" + getId() + "] " + message);
 	}

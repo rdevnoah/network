@@ -9,3 +9,4 @@ Thumbs.db
 .classpath
 /.settings/
 .project
+/target/
