@@ -7,3 +7,5 @@
 ehthumbs.db
 Thumbs.db
 .classpath
+/.settings/
+.project
