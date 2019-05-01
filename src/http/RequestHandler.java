@@ -7,22 +7,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 
 public class RequestHandler extends Thread {
 	private static String documentRoot = "";
 	
 	static { // static 블럭을 통해 바로 Method Area에 올린다. (프로그램이 로딩될 때 바로 올라가는 곳)
-		try {
-			documentRoot = new File(RequestHandler.class.getProtectionDomain().getCodeSource().getLocation().toURI()).
-					getPath();
-			documentRoot += "/webapp";
-			System.out.println("---->"+documentRoot);
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		documentRoot = RequestHandler.class.getClass().getResource("/webapp").getPath();
+		System.out.println("---->"+documentRoot);
 	}
 	
 	private static final String ERROR_LOC = "./webapp/error";
