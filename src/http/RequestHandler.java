@@ -7,10 +7,24 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 
 public class RequestHandler extends Thread {
-	private static final String DOCUMENT_ROOT = "./webapp";
+	private static String documentRoot = "";
+	
+	static { // static 블럭을 통해 바로 Method Area에 올린다. (프로그램이 로딩될 때 바로 올라가는 곳)
+		try {
+			documentRoot = new File(RequestHandler.class.getProtectionDomain().getCodeSource().getLocation().toURI()).
+					getPath();
+			documentRoot += "/webapp";
+			System.out.println("---->"+documentRoot);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	private static final String ERROR_LOC = "./webapp/error";
 	private Socket socket;
 
@@ -93,7 +107,7 @@ public class RequestHandler extends Thread {
 			url = "/index.html";
 		}
 
-		File file = new File(DOCUMENT_ROOT + url);
+		File file = new File(documentRoot + url);
 		if (!file.exists()) {
 			/*
 			 * 응답예시 HTTP/1.1 404 File Not Found]\r\n Content-Type:text/html;
